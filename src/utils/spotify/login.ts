@@ -53,6 +53,13 @@ const generateRandomString = (length: number) => {
 };
 
 const logInWithSpotify = async () => {
+  // If token was injected by parent app (SyncLyrics), don't redirect to Spotify login
+  const urlParams = new URLSearchParams(window.location.search);
+  if (urlParams.get('token')) {
+    console.log('[SyncLyrics] Token injected, skipping Spotify OAuth redirect');
+    return;
+  }
+
   let codeVerifier = localStorage.getItem('code_verifier');
 
   if (!codeVerifier) {

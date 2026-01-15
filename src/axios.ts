@@ -4,7 +4,21 @@ import { getFromLocalStorageWithExpiry } from './utils/localstorage';
 
 const path = 'https://api.spotify.com/v1' as const;
 
-const access_token = getFromLocalStorageWithExpiry('access_token') as string;
+/**
+ * Get token from URL params (injected by parent app) or localStorage
+ */
+const getToken = (): string | null => {
+  // First check for injected token from parent app (SyncLyrics)
+  const urlParams = new URLSearchParams(window.location.search);
+  const injectedToken = urlParams.get('token');
+  if (injectedToken) {
+    return injectedToken;
+  }
+  // Fallback to localStorage
+  return getFromLocalStorageWithExpiry('access_token') as string;
+};
+
+const access_token = getToken();
 
 const axios = Axios.create({
   baseURL: path,

@@ -4,7 +4,8 @@ import './styles/App.scss';
 // Utils
 import i18next from 'i18next';
 import { FC, Suspense, lazy, memo, useCallback, useEffect, useMemo, useRef } from 'react';
-import { getFromLocalStorageWithExpiry } from './utils/localstorage';
+import { getFromLocalStorageWithExpiry, setLocalStorageWithExpiry } from './utils/localstorage';
+import axios from './axios';
 
 // Components
 import { ConfigProvider } from 'antd';
@@ -18,8 +19,8 @@ import { PersistGate } from 'redux-persist/integration/react';
 import { authActions, loginToSpotify } from './store/slices/auth';
 import { persistor, store, useAppDispatch, useAppSelector } from './store/store';
 
-// Spotify
-import WebPlayback, { WebPlaybackProps } from './utils/spotify/webPlayback';
+// NOTE: Web Playback SDK removed to prevent device takeover
+// Playback now uses Web API (playerService) which plays on user's existing device
 
 // Pages
 import SearchContainer from './pages/Search/Container';
@@ -48,6 +49,14 @@ const SearchPlaylist = lazy(() => import('./pages/Search/Playlists'));
 const SearchPageArtists = lazy(() => import('./pages/Search/Artists'));
 const RecentlySearched = lazy(() => import('./pages/Search/RecentlySearched'));
 
+/**
+ * Get token injected by parent app (SyncLyrics) via URL parameter
+ */
+const getInjectedToken = (): string | null => {
+  const urlParams = new URLSearchParams(window.location.search);
+  return urlParams.get('token');
+};
+
 window.addEventListener('resize', () => {
   const vh = window.innerWidth;
   if (vh < 950) {
@@ -59,44 +68,41 @@ const SpotifyContainer: FC<{ children: any }> = memo(({ children }) => {
   const dispatch = useAppDispatch();
 
   const user = useAppSelector((state) => !!state.auth.user);
-  const token = useAppSelector((state) => state.auth.token);
   const requesting = useAppSelector((state) => state.auth.requesting);
 
   useEffect(() => {
-    const tokenInLocalStorage = getFromLocalStorageWithExpiry('access_token');
-    dispatch(authActions.setToken({ token: tokenInLocalStorage }));
-
-    if (tokenInLocalStorage) {
+    // Check for token injected by parent app (SyncLyrics)
+    const injectedToken = getInjectedToken();
+    
+    if (injectedToken) {
+      // Use injected token - no need for OAuth flow
+      console.log('[SyncLyrics] Using injected token');
+      axios.defaults.headers.common['Authorization'] = 'Bearer ' + injectedToken;
+      // Store it so other parts of the app can access it
+      setLocalStorageWithExpiry('access_token', injectedToken, 3600); // 1 hour
+      dispatch(authActions.setToken({ token: injectedToken }));
       dispatch(authActions.fetchUser());
+      // Mark player as loaded immediately (no SDK to wait for)
+      dispatch(authActions.setPlayerLoaded({ playerLoaded: true }));
     } else {
-      dispatch(loginToSpotify());
+      // Fallback to localStorage token or OAuth flow
+      const tokenInLocalStorage = getFromLocalStorageWithExpiry('access_token');
+      dispatch(authActions.setToken({ token: tokenInLocalStorage }));
+
+      if (tokenInLocalStorage) {
+        dispatch(authActions.fetchUser());
+        dispatch(authActions.setPlayerLoaded({ playerLoaded: true }));
+      } else {
+        dispatch(loginToSpotify());
+      }
     }
   }, [dispatch]);
 
-  const webPlaybackSdkProps: WebPlaybackProps = useMemo(
-    () => ({
-      playerAutoConnect: true,
-      playerInitialVolume: 1.0,
-      playerRefreshRateMs: 1000,
-      playerName: 'Spotify React Player',
-      onPlayerRequestAccessToken: () => Promise.resolve(token!),
-      onPlayerLoading: () => {},
-      onPlayerWaitingForDevice: () => {
-        dispatch(authActions.setPlayerLoaded({ playerLoaded: true }));
-      },
-      onPlayerError: (e) => {
-        dispatch(loginToSpotify());
-      },
-      onPlayerDeviceSelected: () => {
-        dispatch(authActions.setPlayerLoaded({ playerLoaded: true }));
-      },
-    }),
-    [dispatch, token]
-  );
-
   if (!user) return <Spinner loading={requesting}>{children}</Spinner>;
 
-  return <WebPlayback {...webPlaybackSdkProps}>{children}</WebPlayback>;
+  // NOTE: No WebPlayback wrapper - just render children directly
+  // Playback controls use Web API which plays on user's existing device
+  return <>{children}</>;
 });
 
 const RoutesComponent = memo(() => {
