@@ -1,32 +1,18 @@
 @use './variables.scss' as *;
 
 /* ========== SYNCLYRICS CUSTOMIZATION ========== */
-/* Hide the playback bar since we removed the Web Playback SDK.
-   Without the SDK, playback controls don't work (state is null).
-   
-   TO RE-ENABLE: Comment out or delete this entire block.
-   Then implement Option A (poll Web API) or Option B (SDK read-only)
-   to populate the Redux state.spotify.state
+/* Web Playback SDK is now active - player bar is visible.
+   Auto-transfer is disabled in webPlayback.tsx to prevent
+   stealing playback from user's current device.
 */
 
-/* 1. Hide footer/playback bar elements */
-.w-full.bg-black.p-4.flex.items-center.justify-between.h-full.mobile-hidden,
-.mobile-bar,
-.other-device-alert-container {
-  display: none !important;
-}
+/* Full-height Flexbox Layout (with footer space reserved) */
 
-footer {
-  display: none !important;
-}
-
-/* 2. Full-height Flexbox Layout */
-
-/* Main container: flex column, full viewport */
+/* Main container: flex column, viewport minus footer */
 .main-container {
   display: flex !important;
   flex-direction: column !important;
-  height: 100vh !important;
+  height: calc(100vh - 90px) !important;  /* Reserve ~90px for footer */
   padding: 8px !important;
   box-sizing: border-box !important;
   overflow: hidden !important;
