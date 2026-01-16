@@ -20,28 +20,33 @@ footer {
   display: none !important;
 }
 
-/* 2. Reclaim footer space & Fix Layout using Flexbox */
-
-/* Parent container: Flex column, full height */
+/* 2. Reclaim footer space - override inline style on Row */
+/* The Layout sets inline height: calc(100vh - 105px) - we need to override to 100vh */
 .main-container {
-  height: 100vh !important;
-  display: flex !important;
-  flex-direction: column !important;
-  padding-top: 8px !important;  /* Small top padding */
+  padding: 8px !important;
 }
 
-/* The Grid Row - DON'T change flex-direction, just make it fill space */
-.main-container > .ant-row {
-  flex: 1 !important;
-  min-height: 0 !important;  /* Allow flex item to shrink below content size */
+/* Override the inline style on the Row - need high specificity */
+.main-container > .ant-row[style] {
+  height: calc(100vh - 16px) !important;  /* 100vh minus padding */
+  overflow: visible !important;
 }
 
-/* The Main Body Section */
+/* Make the content column fill available height */
+.main-container > .ant-row > .ant-col:last-child {
+  height: 100% !important;
+}
+
+/* The Main Body Section - enable scrolling */
 .Main-section {
-  flex: 1 !important;           /* Take all remaining space automatically */
-  height: auto !important;      /* Unset fixed height */
-  overflow-y: auto !important;  /* Allow internal scrolling */
-  padding-bottom: 0 !important;
+  height: calc(100vh - 80px) !important;  /* Leave room for navbar + padding */
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+}
+
+/* Library panel - fill height and scroll */
+.library {
+  height: calc(100vh - 80px) !important;
 }
 
 /* ========== END SYNCLYRICS CUSTOMIZATION ========== */
