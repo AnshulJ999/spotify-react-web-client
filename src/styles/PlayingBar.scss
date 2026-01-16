@@ -19,14 +19,25 @@ footer {
   display: none !important;
 }
 
-/* Make main container use full height (override the 105px reserved for footer) */
+/* Make main container use FULL height - no reserved space */
 .main-container > .ant-row {
-  height: calc(100vh - 8px) !important;
+  height: 100vh !important;
 }
 
-/* Fix mobile padding that was for footer */
+/* Remove all bottom padding from main section */
 .Main-section {
-  padding-bottom: 8px !important;
+  padding-bottom: 0 !important;
+}
+
+/* Fix any internal gaps - ensure panels fill their containers */
+.main-container {
+  height: 100vh !important;
+  overflow: hidden;
+}
+
+/* Remove gap between navbar and content */
+.ant-row {
+  row-gap: 0 !important;
 }
 /* ========== END SYNCLYRICS CUSTOMIZATION ========== */
 
