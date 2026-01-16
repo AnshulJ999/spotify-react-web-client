@@ -13,6 +13,21 @@
 .other-device-alert-container {
   display: none !important;
 }
+
+/* Hide the footer entirely and reclaim the space */
+footer {
+  display: none !important;
+}
+
+/* Make main container use full height (override the 105px reserved for footer) */
+.main-container > .ant-row {
+  height: calc(100vh - 8px) !important;
+}
+
+/* Fix mobile padding that was for footer */
+.Main-section {
+  padding-bottom: 8px !important;
+}
 /* ========== END SYNCLYRICS CUSTOMIZATION ========== */
 
 .player-pause-button {
