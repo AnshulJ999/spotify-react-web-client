@@ -1,5 +1,20 @@
 @use './variables.scss' as *;
 
+/* ========== SYNCLYRICS CUSTOMIZATION ========== */
+/* Hide the playback bar since we removed the Web Playback SDK.
+   Without the SDK, playback controls don't work (state is null).
+   
+   TO RE-ENABLE: Comment out or delete this entire block.
+   Then implement Option A (poll Web API) or Option B (SDK read-only)
+   to populate the Redux state.spotify.state
+*/
+.w-full.bg-black.p-4.flex.items-center.justify-between.h-full.mobile-hidden,
+.mobile-bar,
+.other-device-alert-container {
+  display: none !important;
+}
+/* ========== END SYNCLYRICS CUSTOMIZATION ========== */
+
 .player-pause-button {
   margin-bottom: 5px;
   background-color: #fff;
