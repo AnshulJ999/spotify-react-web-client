@@ -9,7 +9,7 @@
    to populate the Redux state.spotify.state
 */
 
-/* 1. Hide footer/playback bar elements ONLY */
+/* 1. Hide footer/playback bar elements */
 .w-full.bg-black.p-4.flex.items-center.justify-between.h-full.mobile-hidden,
 .mobile-bar,
 .other-device-alert-container {
@@ -20,14 +20,28 @@ footer {
   display: none !important;
 }
 
-/* 2. Reclaim footer space - override the calc(100vh - 150px) height */
-.Main-section {
-  height: calc(100vh - 80px) !important;  /* Was 150px, now only need ~80px for header */
+/* 2. Reclaim footer space & Fix Layout using Flexbox */
+
+/* Parent container: Flex column, full height */
+.main-container {
+  height: 100vh !important;
+  display: flex !important;
+  flex-direction: column !important;
+  padding-top: 8px !important;  /* Small top padding */
 }
 
-/* 3. Small top padding to prevent overlap with our modal controls */
-.main-container {
-  padding-top: 10px !important;
+/* The Grid Row - DON'T change flex-direction, just make it fill space */
+.main-container > .ant-row {
+  flex: 1 !important;
+  min-height: 0 !important;  /* Allow flex item to shrink below content size */
+}
+
+/* The Main Body Section */
+.Main-section {
+  flex: 1 !important;           /* Take all remaining space automatically */
+  height: auto !important;      /* Unset fixed height */
+  overflow-y: auto !important;  /* Allow internal scrolling */
+  padding-bottom: 0 !important;
 }
 
 /* ========== END SYNCLYRICS CUSTOMIZATION ========== */
@@ -390,7 +404,7 @@ footer {
 
 @media (max-width: $desktop-breakpoint) {
   .Main-section {
-    padding-bottom: 50px !important;
+    padding-bottom: 5px !important;
   }
 }
 
