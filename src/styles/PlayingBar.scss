@@ -8,38 +8,63 @@
    Then implement Option A (poll Web API) or Option B (SDK read-only)
    to populate the Redux state.spotify.state
 */
+
+/* 1. Hide footer/playback bar elements */
 .w-full.bg-black.p-4.flex.items-center.justify-between.h-full.mobile-hidden,
 .mobile-bar,
 .other-device-alert-container {
   display: none !important;
 }
 
-/* Hide the footer entirely and reclaim the space */
 footer {
   display: none !important;
 }
 
-/* Make main container use FULL height - no reserved space */
-.main-container > .ant-row {
-  height: 100vh !important;
-}
-
-/* Remove all bottom padding from main section AND override height */
-.Main-section {
-  padding-bottom: 0 !important;
-  height: 100% !important;  /* Override the calc(100vh - 150px) from App.scss */
-}
-
-/* Fix any internal gaps - ensure panels fill their containers */
+/* 2. Main container - full viewport height with small top padding */
 .main-container {
   height: 100vh !important;
   overflow: hidden;
+  padding-top: 4px !important;  /* Small top padding to prevent overlap */
 }
 
-/* Remove gap between navbar and content */
+.main-container > .ant-row {
+  height: calc(100vh - 4px) !important;  /* Account for the 4px top padding */
+}
+
+/* 3. Remove row gap between navbar and content */
 .ant-row {
   row-gap: 0 !important;
 }
+
+/* 4. Main content section - full height */
+.Main-section {
+  padding-bottom: 0 !important;
+  height: 100% !important;
+}
+
+/* 5. Library panel - expand to fill container */
+.library {
+  height: 100% !important;
+  max-height: 100% !important;
+}
+
+.library-list {
+  height: calc(100% - 100px) !important;  /* Leave room for header area */
+  max-height: none !important;
+}
+
+/* 6. Fix the nav-header gap on non-home pages */
+.nav-header {
+  position: relative !important;  /* Override fixed positioning */
+  margin-top: 0 !important;
+}
+
+/* 7. Panels should fill their containers */
+[data-panel-id="left"],
+[data-panel-id="center"] {
+  height: 100% !important;
+}
+
 /* ========== END SYNCLYRICS CUSTOMIZATION ========== */
 
 .player-pause-button {
