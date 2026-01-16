@@ -118,7 +118,10 @@ const WebPlayback: FC<WebPlaybackProps> = memo((props) => {
     webPlaybackInstance.current.on('ready', async (data) => {
       dispatch(spotifyActions.setDeviceId({ deviceId: data.device_id }));
       dispatch(spotifyActions.setActiveDevice({ activeDevice: data.device_id }));
-      await playerService.transferPlayback(data.device_id);
+      // NOTE: Auto-transfer disabled for SyncLyrics integration
+      // This prevents playback from being stolen when the modal opens
+      // User can manually transfer via device picker if desired
+      // await playerService.transferPlayback(data.device_id);
     });
 
     if (playerAutoConnect) {

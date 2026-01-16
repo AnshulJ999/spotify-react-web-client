@@ -19,8 +19,8 @@ import { PersistGate } from 'redux-persist/integration/react';
 import { authActions, loginToSpotify } from './store/slices/auth';
 import { persistor, store, useAppDispatch, useAppSelector } from './store/store';
 
-// NOTE: Web Playback SDK removed to prevent device takeover
-// Playback now uses Web API (playerService) which plays on user's existing device
+// Spotify Web Playback SDK (auto-transfer disabled in webPlayback.tsx)
+import WebPlayback, { WebPlaybackProps } from './utils/spotify/webPlayback';
 
 // Pages
 import SearchContainer from './pages/Search/Container';
@@ -68,6 +68,7 @@ const SpotifyContainer: FC<{ children: any }> = memo(({ children }) => {
   const dispatch = useAppDispatch();
 
   const user = useAppSelector((state) => !!state.auth.user);
+  const token = useAppSelector((state) => state.auth.token);
   const requesting = useAppSelector((state) => state.auth.requesting);
 
   useEffect(() => {
@@ -82,8 +83,6 @@ const SpotifyContainer: FC<{ children: any }> = memo(({ children }) => {
       setLocalStorageWithExpiry('access_token', injectedToken, 3600); // 1 hour
       dispatch(authActions.setToken({ token: injectedToken }));
       dispatch(authActions.fetchUser());
-      // Mark player as loaded immediately (no SDK to wait for)
-      dispatch(authActions.setPlayerLoaded({ playerLoaded: true }));
     } else {
       // Fallback to localStorage token or OAuth flow
       const tokenInLocalStorage = getFromLocalStorageWithExpiry('access_token');
@@ -91,18 +90,40 @@ const SpotifyContainer: FC<{ children: any }> = memo(({ children }) => {
 
       if (tokenInLocalStorage) {
         dispatch(authActions.fetchUser());
-        dispatch(authActions.setPlayerLoaded({ playerLoaded: true }));
       } else {
         dispatch(loginToSpotify());
       }
     }
   }, [dispatch]);
 
+  // Web Playback SDK props (auto-transfer disabled in webPlayback.tsx)
+  const webPlaybackSdkProps: WebPlaybackProps = useMemo(
+    () => ({
+      playerAutoConnect: true,
+      playerInitialVolume: 1.0,
+      playerRefreshRateMs: 1000,
+      playerName: 'SyncLyrics Browser',
+      onPlayerRequestAccessToken: () => Promise.resolve(token!),
+      onPlayerLoading: () => {},
+      onPlayerWaitingForDevice: () => {
+        dispatch(authActions.setPlayerLoaded({ playerLoaded: true }));
+      },
+      onPlayerError: (e) => {
+        console.error('[WebPlayback] Error:', e);
+        // Don't redirect to login on error, just mark as loaded
+        dispatch(authActions.setPlayerLoaded({ playerLoaded: true }));
+      },
+      onPlayerDeviceSelected: () => {
+        dispatch(authActions.setPlayerLoaded({ playerLoaded: true }));
+      },
+    }),
+    [dispatch, token]
+  );
+
   if (!user) return <Spinner loading={requesting}>{children}</Spinner>;
 
-  // NOTE: No WebPlayback wrapper - just render children directly
-  // Playback controls use Web API which plays on user's existing device
-  return <>{children}</>;
+  // WebPlayback SDK wrapper - provides state but won't auto-transfer playback
+  return <WebPlayback {...webPlaybackSdkProps}>{children}</WebPlayback>;
 });
 
 const RoutesComponent = memo(() => {
