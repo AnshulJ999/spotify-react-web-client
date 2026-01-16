@@ -68,12 +68,7 @@ export const AppLayout: FC<{ children: ReactElement }> = memo((props) => {
           wrap
           justify='end'
           gutter={[8, 8]}
-          style={{
-            overflow: 'hidden',
-            height: `calc(100vh - ${
-              activeOnOtherDevice ? '141' : !user && isMobile ? '0' : '105'
-            }px)`,
-          }}
+          className='main-row'
         >
           <Col span={24}>
             <Navbar />
@@ -81,9 +76,7 @@ export const AppLayout: FC<{ children: ReactElement }> = memo((props) => {
 
           <Col
             span={24}
-            style={{
-              maxHeight: activeOnOtherDevice ? `calc(100vh - 185px)` : undefined,
-            }}
+            className='content-col'
           >
             <PanelGroup direction='horizontal' autoSaveId='persistence'>
               <Panel
