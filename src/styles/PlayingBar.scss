@@ -9,7 +9,7 @@
    to populate the Redux state.spotify.state
 */
 
-/* 1. Hide footer/playback bar elements */
+/* 1. Hide footer/playback bar elements ONLY */
 .w-full.bg-black.p-4.flex.items-center.justify-between.h-full.mobile-hidden,
 .mobile-bar,
 .other-device-alert-container {
@@ -20,49 +20,14 @@ footer {
   display: none !important;
 }
 
-/* 2. Main container - full viewport height with small top padding */
-.main-container {
-  height: 100vh !important;
-  overflow: hidden;
-  padding-top: 4px !important;  /* Small top padding to prevent overlap */
-}
-
-.main-container > .ant-row {
-  height: calc(100vh - 4px) !important;  /* Account for the 4px top padding */
-}
-
-/* 3. Remove row gap between navbar and content */
-.ant-row {
-  row-gap: 0 !important;
-}
-
-/* 4. Main content section - full height */
+/* 2. Reclaim footer space - override the calc(100vh - 150px) height */
 .Main-section {
-  padding-bottom: 0 !important;
-  height: 100% !important;
+  height: calc(100vh - 80px) !important;  /* Was 150px, now only need ~80px for header */
 }
 
-/* 5. Library panel - expand to fill container */
-.library {
-  height: 100% !important;
-  max-height: 100% !important;
-}
-
-.library-list {
-  height: calc(100% - 100px) !important;  /* Leave room for header area */
-  max-height: none !important;
-}
-
-/* 6. Fix the nav-header gap on non-home pages */
-.nav-header {
-  position: relative !important;  /* Override fixed positioning */
-  margin-top: 0 !important;
-}
-
-/* 7. Panels should fill their containers */
-[data-panel-id="left"],
-[data-panel-id="center"] {
-  height: 100% !important;
+/* 3. Small top padding to prevent overlap with our modal controls */
+.main-container {
+  padding-top: 10px !important;
 }
 
 /* ========== END SYNCLYRICS CUSTOMIZATION ========== */
