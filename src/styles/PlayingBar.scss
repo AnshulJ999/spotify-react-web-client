@@ -72,9 +72,24 @@ footer {
   flex-direction: column !important;
 }
 
+.library-list-container {
+  flex: 1 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  min-height: 0 !important;  /* Allow shrinking */
+}
+
+.library-list-container > .ant-col {
+  flex: 1 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  min-height: 0 !important;
+}
+
 .library-list {
   flex: 1 !important;
   overflow-y: auto !important;
+  min-height: 0 !important;
 }
 
 /* ========== END SYNCLYRICS CUSTOMIZATION ========== */

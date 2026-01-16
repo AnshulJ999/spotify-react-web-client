@@ -47,7 +47,6 @@ const YourLibrary = () => {
             style={{
               overflowY: 'scroll',
               overflowX: 'hidden',
-              height: `calc(100vh - ${heightValue}px`,
             }}
           >
             {!user ? <AnonymousContent /> : <LoggedContent />}
