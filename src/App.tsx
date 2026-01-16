@@ -254,7 +254,7 @@ const RootComponent = () => {
   }, [user]);
 
   return (
-    <Router>
+    <Router basename="/media-browser">
       <AppLayout>
         <RoutesComponent />
       </AppLayout>
