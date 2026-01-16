@@ -24,9 +24,10 @@ footer {
   height: 100vh !important;
 }
 
-/* Remove all bottom padding from main section */
+/* Remove all bottom padding from main section AND override height */
 .Main-section {
   padding-bottom: 0 !important;
+  height: 100% !important;  /* Override the calc(100vh - 150px) from App.scss */
 }
 
 /* Fix any internal gaps - ensure panels fill their containers */
